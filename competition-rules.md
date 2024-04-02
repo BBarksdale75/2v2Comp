@@ -27,7 +27,7 @@ overall
   - [ ] EXTRA - Events need to get archived and then be able to list old archieved events
 - [ ] Allow evidence collection on a per event basis
   - [ ] Evidence needs to be associated with one event
-    - [] Allow for basic information to be collected on event creation.
+    - [ ] Allow for basic information to be collected on event creation.
       - Time/Date Create (auto)
       - Incident Time and Date
       - Incident Information
