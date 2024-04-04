@@ -1,0 +1,73 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+Table Account_Role { 
+  AccountRoleId int 
+  AccountRoleName varchar
+}
+
+Table Account {
+  UserUUID integer
+  UserFName varchar
+  UserLName varchar
+  CreatedOn datetime 
+  AccountRoleId int 
+  isActive bit 
+}
+
+Table ResponseTeam {
+  ResponseTeamId uniqueidentifier 
+  ResponseTeamDescription text 
+  ResponseTeamName varchar
+}
+
+Table ResponseTeam_Account { 
+  UserUUID uniqueidentifier 
+  ResponseTeamId uniqueidentifier
+}
+
+Table Event_Type { 
+  EventTypeId serial [pk]
+  EventTypeName varchar
+  EventTypeDesc TEXT
+}
+
+Table Event_Status { 
+  EventStatusId serial [pk]
+  EventStatusName varchar 
+  EventStatusDesc TEXT
+}
+
+Table Event { 
+  EventId uniqueidentifier [pk] 
+  EventTypeId int 
+  EventName varchar
+  EventStatusId int 
+  CommanderUserUUID uniqueidentifier
+  EventSeverityId int 
+}
+
+Table Event_Severity { 
+  EventSeverityId serial [pk]
+  EventSeverityLevel varchar 
+  EventSeverityDescription varhar
+}
+
+Table Entry { 
+  EntryId uniqueidentifier [pk] 
+  EntryNoteId varchar 
+  EventId uniqueidentifier
+  EntryTypeId int 
+  EnteredByUserUUID uniqueidentifier
+  CreatedOn datetime
+}
+
+Table Entry_Type {
+  TimlineEntryTypeId serial [pk] 
+  TimlineEntryTypeName varchar
+}
+
+Table Entry_Notes { 
+  EntryId uniqueidentifier 
+  EntryNoteId uniqueidentifier [pk] 
+  EntryNote text
+}
