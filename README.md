@@ -52,9 +52,6 @@ So users will create an incident and the default status will be open (something 
 
 ### Event Severity
 
-#### Event Severity Notes
-The below severity levels are in place for the Minimal Viable Product, however orginizations should be able to accept what levels they should use (A,B,C,D or 1,2,3,4) and enter custom descriptions.
-
 1. A 
    - Highest level of severity. All Hands on Decks, Most Senior IR teams engaged. Most customers impacted or sensitive services/data have been compromised.
 2. B 
@@ -63,3 +60,22 @@ The below severity levels are in place for the Minimal Viable Product, however o
    - Low Level of severity. Minimal or no customer impact. No impact to business continuity. 
 4. D 
    - Very low level of severity. No customer impact, Ir team engaged as needed.  
+
+
+#### Event Severity Notes
+The above severity levels are in place for the Minimal Viable Product, however orginizations should be able to accept what levels they should use (A,B,C,D or 1,2,3,4) and enter custom descriptions.
+
+### Account Roles 
+
+1. Admin 
+   1. Allows a user to create incidents, manage users, manage teams, and resolve incidents 
+2. Responder
+   1. Responders can be added to a response team, manage incidents, and update incidents
+3. ReadOnly 
+   1. Read only users are able to view reports about an incident and review an incident timeline but are unable to actually add notes to an incident, change the incidents status, or perform any administrative actions.
+
+### Entry Types
+
+1. Status Change
+   1. The status of the event has been updated 
+2. 
