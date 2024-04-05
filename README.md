@@ -74,8 +74,15 @@ The above severity levels are in place for the Minimal Viable Product, however o
 3. ReadOnly 
    1. Read only users are able to view reports about an incident and review an incident timeline but are unable to actually add notes to an incident, change the incidents status, or perform any administrative actions.
 
-### Entry Types
+### Event Timeline Entry Type
 
 1. Status Change
-   1. The status of the event has been updated 
-2. 
+   1. The status of the event has been updated.
+2. Note Added
+   1. A note was added at its current stage.
+1. Severity Change
+   1. The severity event has been changed.
+1. Team Assigned
+   1. An Incident Response team has been assigned to the incident.
+1. Type Change
+   1. The Event Type was changed.

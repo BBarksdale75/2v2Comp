@@ -9,20 +9,20 @@ Table Account {
   UserUUID integer
   UserFName varchar
   UserLName varchar
-  CreatedOn datetime 
+  CreatedOn timestamp 
   AccountRoleId int 
   isActive bit 
 }
 
 Table ResponseTeam {
-  ResponseTeamId uniqueidentifier 
+  ResponseTeamId uuid 
   ResponseTeamDescription text 
   ResponseTeamName varchar
 }
 
 Table ResponseTeam_Account { 
-  UserUUID uniqueidentifier 
-  ResponseTeamId uniqueidentifier
+  UserUUID uuid 
+  ResponseTeamId uuid
 }
 
 Table Event_Type { 
@@ -38,36 +38,37 @@ Table Event_Status {
 }
 
 Table Event { 
-  EventId uniqueidentifier [pk] 
+  EventId uuid [pk] 
   EventTypeId int 
   EventName varchar
   EventStatusId int 
-  CommanderUserUUID uniqueidentifier
+  CommanderUserUUID uuid
   EventSeverityId int 
 }
 
 Table Event_Severity { 
   EventSeverityId serial [pk]
   EventSeverityLevel varchar 
-  EventSeverityDescription varhar
+  EventSeverityDescription varchar
 }
 
-Table Entry { 
-  EntryId uniqueidentifier [pk] 
-  EntryNoteId varchar 
-  EventId uniqueidentifier
-  EntryTypeId int 
-  EnteredByUserUUID uniqueidentifier
-  CreatedOn datetime
+Table Event_Timeline { 
+  EventId uuid
+  TimelineId uuid [pk] 
+  TimelineNoteId varchar 
+  TimelineEntryTypeId int 
+  EnteredByUserUUID uuid
+  CreatedOn timestamp
 }
 
-Table Entry_Type {
-  TimlineEntryTypeId serial [pk] 
-  TimlineEntryTypeName varchar
+Table Event_Timeline_Entry_Type {
+  TimelineEntryTypeId serial [pk] 
+  TimelineEntryTypeName varchar
+  TimelineEntryTypeDesc text 
 }
 
-Table Entry_Notes { 
-  EntryId uniqueidentifier 
-  EntryNoteId uniqueidentifier [pk] 
+Table Event_Timeline_Notes { 
+  TimelineNoteId uuid 
+  TimelineId uuid [pk] 
   EntryNote text
 }
