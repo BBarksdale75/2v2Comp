@@ -1,29 +1,27 @@
-from fastapi import FastAPI
-import psycopg2 
+from fastapi import FastAPI, HTTPException
 from models import UserAccount
-import os
+from sql import DatabaseManager
+from uuid import UUID
+import logging 
 
 app = FastAPI() 
 
-# Establish a connection to the database
-conn = psycopg2.connect(
-    dbname=os.getenv('DB_NAME'),
-    user=os.getenv('DB_USER'),
-    password=os.getenv('DB_PASSWORD'),
-    host=os.getenv('DB_HOST_NAME'),
-    port=os.getenv('DB_PORT')
-)
-
-# Create a cursor object using the connection
-cur = conn.cursor()
+sql = DatabaseManager()
 
 @app.get('/accounts')
 async def get_all_user_accounts(): 
-    cur.execute("SELECT * FROM GetAccounts();")
-    result = cur.fetchall() 
-    accounts = []
-    for row in result: 
-        accounts.append( 
-            dict(zip(UserAccount.model_fields.keys(),row))
-        )
-    return accounts
+    return sql.get_user_accounts()
+
+@app.post('/accounts')
+async def create_user_account(body: UserAccount):
+    try: 
+        sql.create_user_account(body)
+        return True
+    except Exception as err: 
+        logging.error(f'Unable to create account: {err}')
+        raise HTTPException(status_code=500, detail='Unable to create user account due to an unahndled exception.') 
+
+@app.get('/accounts/{user_guid}')
+async def get_all_user_accounts(user_guid: UUID): 
+    return sql.get_user_account_by_id(user_guid)
+
