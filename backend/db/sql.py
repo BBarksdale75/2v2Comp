@@ -3,7 +3,7 @@ from psycopg2 import Error
 from config import DBConfig
 import logging
 from api.models import UserAccount
-from uuid import UUID
+from psycopg2.errors import InvalidTextRepresentation
 
 class DatabaseManager:
     """
@@ -100,7 +100,7 @@ class DatabaseManager:
             accounts.append(account)
         return accounts
 
-    def get_user_account_by_id(self, user_guid: str):
+    def get_user_account_by_id(self, user_uuid: str):
         """
         Retrieves a user account from the database by its ID.
 
@@ -110,9 +110,9 @@ class DatabaseManager:
         Returns:
             dict: A dictionary representing the user account.
         """
-        logging.info(f'Getting account with Id: {user_guid}')
+        logging.info(f'Getting account with Id: {user_uuid}')
         qstring = 'SELECT * FROM GetAccountById(%s) '
-        result = self.execute_query(query=qstring, params=(user_guid,))  # Pass UUID as a tuple
+        result = self.execute_query(query=qstring, params=(user_uuid,))  # Pass UUID as a tuple
         return result
 
         
@@ -125,6 +125,47 @@ class DatabaseManager:
             user.is_active
         ))
         return result
+    
+    def delete_user_account_by_id(self, user_uuid: str):
+        """
+        Retrieves a user account from the database by its ID.
+
+        Args:
+            user_guid (UUID): The UUID of the user account to retrieve.
+
+        Returns:
+            dict: A dictionary representing the user account.
+        """
+        logging.info(f'Deleting account with Id: {user_uuid}')
+        qstring = 'CALL DeleteAccount(UserId => %s)'
+        result = self.execute_query(query=qstring, params=(user_uuid,))  # Pass UUID as a tuple
+        return result
+    
+    
+    def update_user_account_by_id(self, user_uuid: str, updated_information:UserAccount):
+        """
+        Updates a user account from the database by its ID.
+
+        Args:
+            user_uuid (UUID): The UUID of the user account to retrieve.
+            user (UserAccount): The parameters to update for the user account
+
+        Returns:
+            dict: A dictionary representing the user account.
+        """
+        try: 
+            logging.info(f'Getting account with Id: {user_uuid}')
+            qstring = 'CALL UpdateAccount(UserId => %s,FirstName => %s,LastName => %s,RoleId => %s,Active => %s)'
+            result = self.execute_query(query=qstring, params=(user_uuid,
+                                                            updated_information.user_fname,
+                                                            updated_information.user_lname,
+                                                            updated_information.account_role_id,
+                                                            updated_information.is_active
+                                                            ))  # Pass UUID as a tuple
+            return result
+        except InvalidTextRepresentation as err: 
+            raise ValueError(f'Shit broke yo {err}')
+
 
 # Example usage:
 if __name__ == "__main__":

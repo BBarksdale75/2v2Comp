@@ -68,8 +68,7 @@ BEGIN
 END;
 $$;
 
--- SELECT * from GetAccountById('2d81650b-5de9-4442-bc4b-d9990dbb296e');
--- CALL DeleteAccount(UserId => 'fb78ae80-ad7f-45f2-a86e-9efd750df977');
+-- CALL UpdateAccount(UserId => ,FirstName => ,LastName => ,RoleId =>,Active => )
 
 CREATE OR REPLACE PROCEDURE DeleteAccount(UserID UUID)
 LANGUAGE plpgsql
@@ -81,6 +80,7 @@ WHERE UserUUID = UserId;
 END;
 $$;
 
+-- CALL DeleteAccount(UserId => 'fb78ae80-ad7f-45f2-a86e-9efd750df977');
 
 CREATE OR REPLACE PROCEDURE CreateAccountRole(AccountRoleName VARCHAR)
 LANGUAGE plpgsql
