@@ -2,7 +2,7 @@ import psycopg2
 from psycopg2 import Error
 from config import DBConfig
 import logging
-from backend.api.models import UserAccount
+from api.models import UserAccount
 from uuid import UUID
 
 class DatabaseManager:
@@ -62,27 +62,19 @@ class DatabaseManager:
             list: The result of the query execution.
         """
         try:
-            self.cursor.execute(query, params)
+            cursor = self.connection.cursor()  # Create a new cursor
+            cursor.execute(query, params)
             self.connection.commit()
             logging.debug(f"Query executed successfully: {query}")
-            return self.cursor.fetchall()
+            result = cursor.fetchall() if cursor.description else []  # Check for None result
+            cursor.close()  # Close the cursor
+            return result
         except Error as e:
+            self.connection.rollback()  # Rollback transaction on error
             logging.error(f"Error executing query: {e} - QueryString: {query}")
+            return []  # Return empty list to prevent subsequent errors
 
-    def call_stored_procedure(self, procedure_name, params=None):
-        """
-        Calls a stored procedure in the database.
 
-        Args:
-            procedure_name (str): The name of the stored procedure to be called.
-            params (dict): Dictionary of parameters to be passed to the stored procedure.
-        """
-        try:
-            self.cursor.callproc(procedure_name, params)
-            self.connection.commit()
-            logging.debug(f"Stored procedure with name: {procedure_name} called successfully.")
-        except Error as e:
-            logging.error(f"Error calling stored procedure: {e}")
 
     def close_connection(self):
         """
@@ -108,7 +100,7 @@ class DatabaseManager:
             accounts.append(account)
         return accounts
 
-    def get_user_account_by_id(self, user_guid: UUID):
+    def get_user_account_by_id(self, user_guid: str):
         """
         Retrieves a user account from the database by its ID.
 
@@ -118,23 +110,21 @@ class DatabaseManager:
         Returns:
             dict: A dictionary representing the user account.
         """
+        logging.info(f'Getting account with Id: {user_guid}')
         qstring = 'SELECT * FROM GetAccountById(%s) '
-        result = self.execute_query(query=qstring, params=user_guid)
+        result = self.execute_query(query=qstring, params=(user_guid,))  # Pass UUID as a tuple
+        return result
 
-        if len(result) > 1:
-            raise ValueError(f'Multiple accounts found with user guid: {user_guid}')
-        else:
-            account = dict(zip(UserAccount.model_fields.keys(), result[0]))
-            return account
         
     def create_user_account(self, user:UserAccount): 
-        qstring = 'CALL Create CreateAccount(%s,%s,%s,%s,%s)'
-        self.call_stored_procedure(procedure_name='CreateAccount',params=(
+        qstring = 'CALL CreateAccount (%s, %s, %s, %s )'
+        result = self.execute_query(query=qstring,params=(
             user.user_fname,
             user.user_lname,
             user.account_role_id, 
             user.is_active
         ))
+        return result
 
 # Example usage:
 if __name__ == "__main__":

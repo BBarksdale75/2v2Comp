@@ -1,11 +1,10 @@
 from pydantic import BaseModel 
-from uuid import UUID
 from datetime import datetime
 
 class UserAccount(BaseModel): 
-    user_uuid: UUID
+    user_uuid: str | None
     user_fname: str 
     user_lname: str 
-    crated_on: datetime
+    created_on: None | datetime = None
     account_role_id: int 
     is_active: bool
