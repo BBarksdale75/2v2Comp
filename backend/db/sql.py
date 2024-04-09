@@ -2,7 +2,7 @@ import psycopg2
 from psycopg2 import Error
 from config import DBConfig
 import logging
-from api.models import UserAccount
+from api.models import UserAccount, ResponseTeam, ResponseTeamAccount
 from psycopg2.errors import InvalidTextRepresentation
 
 class DatabaseManager:
@@ -73,8 +73,6 @@ class DatabaseManager:
             self.connection.rollback()  # Rollback transaction on error
             logging.error(f"Error executing query: {e} - QueryString: {query}")
             return []  # Return empty list to prevent subsequent errors
-
-
 
     def close_connection(self):
         """
@@ -152,9 +150,11 @@ class DatabaseManager:
 
         Returns:
             dict: A dictionary representing the user account.
+
+        # TODO: Fix error handling on this 
         """
         try: 
-            logging.info(f'Getting account with Id: {user_uuid}')
+            logging.info(f'Updating account with Id: {user_uuid}')
             qstring = 'CALL UpdateAccount(UserId => %s,FirstName => %s,LastName => %s,RoleId => %s,Active => %s)'
             result = self.execute_query(query=qstring, params=(user_uuid,
                                                             updated_information.user_fname,
@@ -165,6 +165,52 @@ class DatabaseManager:
             return result
         except InvalidTextRepresentation as err: 
             raise ValueError(f'Shit broke yo {err}')
+
+
+    def get_teams(self):
+        qstring = 'SELECT * from GetResponseTeams()'
+        result = self.execute_query(query=qstring)
+        teams = []
+        for row in result:
+            team = dict(zip(ResponseTeam.model_fields.keys(), row))
+            teams.append(team)
+        return teams
+
+
+    def get_team_by_id(self, team_uuid: str):
+        logging.info(f'Getting team with Id: {team_uuid}')
+        qstring = 'SELECT * FROM GetResponseTeamById(%s)'
+        result = self.execute_query(query=qstring, params=(team_uuid,))  
+        return result
+
+
+    def create_team(self, team:ResponseTeam): 
+        qstring = 'CALL CreateResponseTeam (%s, %s)'
+        result = self.execute_query(query=qstring, params=(
+            team.response_team_name,
+            team.response_team_description
+        ))
+        return result
+    
+    def delete_team_by_id(self, team_uuid: str):
+        logging.info(f'Deleting team with Id: {team_uuid}')
+        qstring = 'CALL DeleteResponseTeam(TeamId => %s)'
+        result = self.execute_query(query=qstring, params=(team_uuid,))  # Pass UUID as a tuple
+        return result
+
+    def update_team_by_id(self, team_uuid: str, updated_information:ResponseTeam):
+            try: 
+                logging.info(f'Updating team with Id: {team_uuid}')
+                qstring = 'CALL UpdateResponseTeam(TeamId => %s,TeamDesc => %s,ResponseTeamName => %s)'
+                result = self.execute_query(query=qstring, params=(team_uuid,
+                                                                updated_information.response_team_desc,
+                                                                updated_information.response_team_name
+                                                                ))  # Pass UUID as a tuple
+                return result
+            except InvalidTextRepresentation as err: 
+                raise ValueError(f'Shit broke yo {err}')
+
+
 
 
 # Example usage:

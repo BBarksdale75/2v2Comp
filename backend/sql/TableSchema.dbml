@@ -6,7 +6,7 @@ Table Account_Role {
 }
 
 Table Account {
-  UserUUID integer
+  UserUUID uuid
   UserFName varchar
   UserLName varchar
   CreatedOn timestamp 

@@ -21,7 +21,7 @@ async def create_user_account_async(body: UserAccount):
         raise HTTPException(status_code=500, detail='Unable to create user account due to an unhandled exception.') 
 
 @router.get('/account/{user_uuid}')
-async def get_all_user_accounts_async(user_uuid: str): 
+async def get_user_account_by_id_async(user_uuid: str): 
     return sql.get_user_account_by_id(user_uuid)
 
 @router.delete('/account/{user_uuid}')
@@ -36,10 +36,10 @@ async def delete_user_account_async(user_uuid: str):
 @router.patch('/account/{user_uuid}')
 async def update_user_account_async(user_uuid: str,body:UserAccount):
     try:
-        print(user_uuid)
         sql.update_user_account_by_id(
             user_uuid=user_uuid,
-            updated_information=body)
+            updated_information=body
+            )
         return True
     except Exception as err: 
         logging.error(f'Unable to update account: {err}')
