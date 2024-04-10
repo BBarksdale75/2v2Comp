@@ -209,6 +209,19 @@ class DatabaseManager:
                 return result
             except InvalidTextRepresentation as err: 
                 raise ValueError(f'Shit broke yo {err}')
+                 
+    def insert_team_user(self, team_uuid: str, user_uuid: str):
+            try:
+                logging.info(f'Inserting user with UUID: {user_uuid} into team with UUID: {team_uuid}')
+                qstring = 'CALL InsertResponseTeamUser(TeamUUID => %s, UserUUID => %s)'
+                result = self.execute_query(query=qstring, params=(team_uuid, user_uuid))
+                return result
+            except Exception as err:
+                    logging.error(f'Unable to insert team user: {err}')
+                        
+
+
+            
 
 
 

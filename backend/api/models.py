@@ -9,8 +9,6 @@ class UserAccount(BaseModel):
     account_role_id: int | None = None
     is_active: bool | None = None
 
-from pydantic import BaseModel
-
 class ResponseTeam(BaseModel):
     """
     Represents a response team.
@@ -34,6 +32,3 @@ class ResponseTeamAccount(BaseModel):
     """
     user_uuid: str | None = None
     response_team_id: str | None = None
-
-
-    

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from api.models import ResponseTeam, ResponseTeamAccount
+from api.models import ResponseTeam, ResponseTeamAccount, UserAccount
 from db.sql import DatabaseManager
 import logging 
 
@@ -46,12 +46,18 @@ async def update_team_async(team_uuid: str,body: ResponseTeam):
         raise HTTPException(status_code=500, detail='Unable to update team due to and unhandled exception')
     
 
-@router.post('/team/{team_uuid}/members')
-async def add_team_member_async(): 
-    """
-    * Create an API endpoint that calls the sql.insert_team_user function in python
-    * Add InsertResponseTeamUser stored procedure to the sql.py file 
-    * Accept the Team_UUID within the async function definition above 
-    * Accept a User_UUID using the UserAccount model from the models.py file as the body
-    """
-    pass 
+@router.post('/team/{team_uuid}/member')
+async def insert_team_member(team_uuid: str, body:UserAccount):
+    try:
+        sql.insert_team_user(
+            team_uuid=team_uuid,
+            user_uuid=body.user_uuid
+        )
+        return True
+    except Exception as err:
+        logging.error(f'Unable to insert team member: {err}')
+        raise HTTPException(status_code=500, detail='Unable to insert team member due to an unhandled exception')
+
+## git add -A ; git commit -m 'Add team members api' ; git push 
+
+
