@@ -220,8 +220,15 @@ class DatabaseManager:
                     logging.error(f'Unable to insert team user: {err}')
                         
 
-
-            
+    def delete_team_user(self, team_uuid: str, user_uuid: str):
+            try:
+                # This log should look more like "Deleting user: {user_uuid} from team: {team_uuid} "
+                logging.info(f'Deleting user: {user_uuid} from team: {team_uuid}')
+                qstring = 'CALL DeleteResponseTeamUser(TeamId => %s, Userid => %s)'
+                result = self.execute_query(query=qstring, params=(team_uuid,user_uuid))  # Pass UUID as a tuple
+                return result                
+            except Exception as err:
+                    logging.error(f'Unable to delete user from team: {err}')            
 
 
 

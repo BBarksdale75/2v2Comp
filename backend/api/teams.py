@@ -46,8 +46,8 @@ async def update_team_async(team_uuid: str,body: ResponseTeam):
         raise HTTPException(status_code=500, detail='Unable to update team due to and unhandled exception')
     
 
-@router.post('/team/{team_uuid}/member')
-async def insert_team_member(team_uuid: str, body:UserAccount):
+@router.post('/team/{team_uuid}/user')
+async def create_team_user_async(team_uuid: str, body:UserAccount):
     try:
         sql.insert_team_user(
             team_uuid=team_uuid,
@@ -58,6 +58,22 @@ async def insert_team_member(team_uuid: str, body:UserAccount):
         logging.error(f'Unable to insert team member: {err}')
         raise HTTPException(status_code=500, detail='Unable to insert team member due to an unhandled exception')
 
+
+@router.delete('/team/{team_uuid}/member/{user_uuid}')
+async def delete_team_user_async(team_uuid: str, user_uuid: str): 
+    try:
+        sql.delete_team_user(
+            team_uuid=team_uuid,
+            user_uuid=user_uuid
+        )
+        return True
+    except Exception as err:
+        logging.error(f'Unable to insert team member: {err}')
+        raise HTTPException(status_code=500, detail='Unable to insert team member due to an unhandled exception')
+    
+     # Create function in sql.py file to call the procedure DeleteResponseTeamUser 
+     # Pass the function UserId and TeamId mapping them to user_uuid and team_uuid respectively 
+     # Return true if the user account was deleted successfully 
 ## git add -A ; git commit -m 'Add team members api' ; git push 
 
 

@@ -86,7 +86,6 @@ WHERE ResponseTeamId = TeamId AND UserUUID = UserId;
 END;
 $$;
 
-
 -- Table ResponseTeam_Account { 
 --   UserUUID uuid 
 --   ResponseTeamId uuid
