@@ -1,5 +1,5 @@
 -- Table ResponseTeam {
---   ResponseTeamId uuid 
+--   ResponseTeamUUID uuid 
 --   ResponseTeamDescription text 
 --   ResponseTeamName varchar
 -- }
@@ -8,7 +8,7 @@ CREATE OR REPLACE PROCEDURE CreateResponseTeam(TeamName VARCHAR, TeamDesc TEXT)
 LANGUAGE plpgsql
 AS $$
 BEGIN
-   INSERT INTO ResponseTeam (ResponseTeamId, ResponseTeamDescription, ResponseTeamName)
+   INSERT INTO ResponseTeam (ResponseTeamUUID, ResponseTeamDescription, ResponseTeamName)
    VALUES 
    (uuid_generate_v4(),TeamDesc,LastName,TeamName);
 END;
@@ -16,7 +16,7 @@ $$;
 
 CREATE OR REPLACE FUNCTION GetResponseTeams()
 RETURNS TABLE (
-    ResponseTeamId UUID,
+    ResponseTeamUUID UUID,
     ResponseTeamDescription TEXT,
     ResponseTeamName VARCHAR
 ) 
@@ -24,14 +24,14 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT ResponseTeam.ResponseTeamId, ResponseTeam.ResponseTeamDescription, ResponseTeam.ResponseTeamName
+    SELECT ResponseTeam.ResponseTeamUUID, ResponseTeam.ResponseTeamDescription, ResponseTeam.ResponseTeamName
     FROM ResponseTeam ; 
 END;
 $$;
 
 CREATE OR REPLACE FUNCTION GetResponseTeamById(TeamId UUID)
 RETURNS TABLE (
-    ResponseTeamId UUID,
+    ResponseTeamUUID UUID,
     ResponseTeamDescription TEXT,
     ResponseTeamName VARCHAR
 ) 
@@ -39,9 +39,9 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT ResponseTeam.ResponseTeamId, ResponseTeam.ResponseTeamDescription, ResponseTeam.ResponseTeamName
+    SELECT ResponseTeam.ResponseTeamUUID, ResponseTeam.ResponseTeamDescription, ResponseTeam.ResponseTeamName
     FROM ResponseTeam
-    WHERE ResponseTeam.ResponseTeamId = TeamId ; 
+    WHERE ResponseTeam.ResponseTeamUUID = TeamId ; 
 END;
 $$;
 
@@ -55,7 +55,7 @@ BEGIN
     UPDATE ResponseTeam            -- Update statement to update a user's Role, FirstName, or LastName 
     SET ResponseTeamDescription = COALESCE(TeamDesc, ResponseTeam.ResponseTeamDescription), 
         ResponseTeamName = COALESCE(TeamName, ResponseTeam.ResponseTeamName)
-    WHERE ResponseTeam.ResponseTeamId = TeamId;                                 -- where account.UserUUID = UserId
+    WHERE ResponseTeam.ResponseTeamUUID = TeamId;                                 -- where account.UserUUID = UserId
 END;
 $$;
 
@@ -64,7 +64,7 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
 DELETE FROM ResponseTeam
-WHERE ResponseTeamId = TeamId;
+WHERE ResponseTeamUUID = TeamId;
 END;
 $$;
 
@@ -72,7 +72,7 @@ CREATE OR REPLACE PROCEDURE InsertResponseTeamUser(UserId UUID, TeamId UUID)
 LANGUAGE plpgsql
 AS $$
 BEGIN
-   INSERT INTO ResponseTeam_Account (UserUUID, ResponseTeamId)
+   INSERT INTO ResponseTeam_Account (UserUUID, ResponseTeamUUID)
    VALUES (UserId, TeamId);
 END;
 $$;
@@ -82,11 +82,11 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
 DELETE FROM ResponseTeam_Account
-WHERE ResponseTeamId = TeamId AND UserUUID = UserId;
+WHERE ResponseTeamUUID = TeamId AND UserUUID = UserId;
 END;
 $$;
 
 -- Table ResponseTeam_Account { 
 --   UserUUID uuid 
---   ResponseTeamId uuid
+--   ResponseTeamUUID uuid
 -- }

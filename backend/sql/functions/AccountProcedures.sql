@@ -10,7 +10,7 @@ $$;
 
 -- CALL CreateAccount ('David', 'Danes', 3, False );
 
-CREATE OR REPLACE FUNCTION GetAccountById(UserId UUID)
+CREATE OR REPLACE FUNCTION GetAccountById(Id UUID)
 RETURNS TABLE (
     UserUUID UUID,
     UserFName VARCHAR,
@@ -25,11 +25,11 @@ BEGIN
     RETURN QUERY
     SELECT account.UserUUID, account.UserFName, account.UserLName, account.CreatedOn, account.AccountRoleId, account.isActive
     FROM Account
-    WHERE account.UserUUID = UserId ; 
+    WHERE account.UserUUID = Id ; 
 END;
 $$;
 
--- select * from  GetAccountById('2d81650b-5de9-4442-bc4b-d9990dbb296e');
+-- SELECT * FROM  GetAccountById('2d81650b-5de9-4442-bc4b-d9990dbb296e');
 
 CREATE OR REPLACE FUNCTION GetAccounts()
 RETURNS TABLE (
@@ -51,7 +51,7 @@ $$;
 
 -- SELECT * from GetAccounts();
 
-CREATE OR REPLACE PROCEDURE UpdateAccount(UserId UUID, 
+CREATE OR REPLACE PROCEDURE UpdateAccount(Id UUID, 
     FirstName VARCHAR DEFAULT NULL, 
     LastName VARCHAR DEFAULT NULL, 
     RoleId INT DEFAULT NULL, 
@@ -64,19 +64,18 @@ BEGIN
         UserLName = COALESCE(LastName, Account.UserLName),
         AccountRoleId = COALESCE(RoleId, Account.AccountRoleId ), 
         isActive = COALESCE(Active, Account.isActive)
-    WHERE Account.UserUUID = UserId;                                 -- where account.UserUUID = UserId
+    WHERE Account.UserUUID = Id;                                 -- where account.UserUUID = UserId
 END;
 $$;
 
 -- CALL UpdateAccount(UserId => ,FirstName => ,LastName => ,RoleId =>,Active => )
 
-CREATE OR REPLACE PROCEDURE DeleteAccount(UserID UUID)
+CREATE OR REPLACE PROCEDURE DeleteAccount(Id UUID)
 LANGUAGE plpgsql
 AS $$
 BEGIN
 DELETE FROM Account
-WHERE UserUUID = UserId;
-    -- Your SQL statements here
+WHERE UserUUID = Id;
 END;
 $$;
 

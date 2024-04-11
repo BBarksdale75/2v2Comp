@@ -22,7 +22,7 @@ class ResponseTeam(BaseModel):
     response_team_description: str | None = None
     response_team_name: str | None = None
 
-class ResponseTeamAccount(BaseModel):
+class ResponseTeamAccount(UserAccount):
     """
     Represents a user's association with a response team.
     
@@ -30,5 +30,4 @@ class ResponseTeamAccount(BaseModel):
         user_uuid (str, optional): The UUID of the user.
         response_team_id (str, optional): The ID of the response team.
     """
-    user_uuid: str | None = None
     response_team_id: str | None = None

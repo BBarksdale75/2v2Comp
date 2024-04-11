@@ -20,17 +20,17 @@ CREATE TABLE Account (
 );
 
 CREATE TABLE ResponseTeam (
-    ResponseTeamId UUID PRIMARY KEY,
+    ResponseTeamUUID UUID PRIMARY KEY,
     ResponseTeamDescription TEXT,
     ResponseTeamName VARCHAR
 );
 
 CREATE TABLE ResponseTeam_Account (
     UserUUID UUID,
-    ResponseTeamId UUID,
+    ResponseTeamUUID UUID,
     FOREIGN KEY (UserUUID) REFERENCES Account(UserUUID),
-    FOREIGN KEY (ResponseTeamId) REFERENCES ResponseTeam(ResponseTeamId),
-    PRIMARY KEY (UserUUID, ResponseTeamId)
+    FOREIGN KEY (ResponseTeamUUID) REFERENCES ResponseTeam(ResponseTeamUUID),
+    PRIMARY KEY (UserUUID, ResponseTeamUUID)
 );
 
 CREATE TABLE Event_Type (
@@ -52,7 +52,7 @@ CREATE TABLE Event_Severity (
 );
 
 CREATE TABLE Event (
-    EventId UUID PRIMARY KEY,
+    EventUUID UUID PRIMARY KEY,
     EventTypeId INT,
     EventName VARCHAR,
     EventStatusId INT,
@@ -73,23 +73,23 @@ CREATE TABLE Event_Timeline_Entry_Type (
 
 
 CREATE TABLE Event_Timeline (
-    EventId UUID,
-    TimelineId UUID PRIMARY KEY,
-    TimelineNoteId VARCHAR,
+    EventUUID UUID,
+    TimelineUUID UUID PRIMARY KEY,
+    TimelineNoteUUID VARCHAR,
     TimelineEntryTypeId INT,
     EnteredByUserUUID UUID,
     CreatedOn TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (EventId) REFERENCES Event(EventId),
+    FOREIGN KEY (EventUUID) REFERENCES Event(EventUUID),
     FOREIGN KEY (TimelineEntryTypeId) REFERENCES Event_Timeline_Entry_Type(TimelineEntryTypeId),
     FOREIGN KEY (EnteredByUserUUID) REFERENCES Account(UserUUID)
 );
 
 
 CREATE TABLE Event_Timeline_Notes (
-    TimelineNoteId UUID,
-    TimelineId UUID,
+    TimelineNoteUUID UUID,
+    TimelineUUID UUID,
     EntryNote TEXT,
     CreatedOn TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
-    PRIMARY KEY (TimelineId, TimelineNoteId),
-    FOREIGN KEY (TimelineId) REFERENCES Event_Timeline(TimelineId)
+    PRIMARY KEY (TimelineUUID, TimelineNoteUUID),
+    FOREIGN KEY (TimelineUUID) REFERENCES Event_Timeline(TimelineUUID)
 );

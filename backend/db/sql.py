@@ -135,7 +135,7 @@ class DatabaseManager:
             dict: A dictionary representing the user account.
         """
         logging.info(f'Deleting account with Id: {user_uuid}')
-        qstring = 'CALL DeleteAccount(UserId => %s)'
+        qstring = 'CALL DeleteAccount(Id => %s)'
         result = self.execute_query(query=qstring, params=(user_uuid,))  # Pass UUID as a tuple
         return result
     
@@ -155,7 +155,7 @@ class DatabaseManager:
         """
         try: 
             logging.info(f'Updating account with Id: {user_uuid}')
-            qstring = 'CALL UpdateAccount(UserId => %s,FirstName => %s,LastName => %s,RoleId => %s,Active => %s)'
+            qstring = 'CALL UpdateAccount(Id => %s,FirstName => %s,LastName => %s,RoleId => %s,Active => %s)'
             result = self.execute_query(query=qstring, params=(user_uuid,
                                                             updated_information.user_fname,
                                                             updated_information.user_lname,
@@ -213,7 +213,7 @@ class DatabaseManager:
     def insert_team_user(self, team_uuid: str, user_uuid: str):
             try:
                 logging.info(f'Inserting user with UUID: {user_uuid} into team with UUID: {team_uuid}')
-                qstring = 'CALL InsertResponseTeamUser(TeamUUID => %s, UserUUID => %s)'
+                qstring = 'CALL InsertResponseTeamUser(TeamId => %s, UserUUID => %s)'
                 result = self.execute_query(query=qstring, params=(team_uuid, user_uuid))
                 return result
             except Exception as err:
