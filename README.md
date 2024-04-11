@@ -86,3 +86,40 @@ The above severity levels are in place for the Minimal Viable Product, however o
    1. An Incident Response team has been assigned to the incident.
 1. Type Change
    1. The Event Type was changed.
+
+
+## TODO: 
+
+### SQL.py functions 
+
+functions: 
+
+-  test
+
+-  call the following functions -
+
+   - ~~GetEventTypeById~~
+   - ~~GetAllEventTypes~~
+   - ~~GetEventStatusById~~
+   - ~~GetAllEventStatuses~~
+   - ~~CreateEvent~~
+   - ~~GetEventById~~
+   - ~~GetAllEvents~~
+   - ~~UpdateEvent~~
+   -  ~~DeleteEvent~~
+
+   -  CreateEventTimelineEntryType
+   -  GetEventTimelineEntryTypes
+   -  GetEventTimelineEntryTypeById
+   -  UpdateEventTimelineEntryType
+   -  DeleteTimelineEntryType
+   -  CreateEventTimeline
+   -  GetEventTimelineByUUID
+   -  UpdateEventTimeline
+   -  DeleteEventTimeline
+   -  CreateEventTimelineNote
+
+   -  GetEventTimelineNotesByTimelineUUID
+   -  UpdateEventTimelineNote -
+   -  DeleteEventTimelineNote -
+

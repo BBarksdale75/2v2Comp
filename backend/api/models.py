@@ -31,3 +31,28 @@ class ResponseTeamAccount(UserAccount):
         response_team_id (str, optional): The ID of the response team.
     """
     response_team_id: str | None = None
+
+class EventType(BaseModel): 
+    event_type_id: int  | None = None
+    event_type_name: str | None = None
+    event_type_description: str | None = None
+
+class EventStatus(BaseModel): 
+    event_status_id: int  | None = None
+    event_status_name: str | None = None
+    event_status_desc: str  | None = None
+
+class EventModel(BaseModel):
+    event_uuid: str | None = None
+    event_type_id: int  | None = None
+    event_name: str  | None = None
+    event_status_id: int  | None = None
+    commander_user_uuid: int  | None = None
+    event_severity_id: int  | None = None
+    created_on: datetime | None = None
+
+class EventTimelineNote(BaseModel): 
+    timeline_note_uuid: str | None = None
+    timeline_uuid: str | None = None
+    entry_note: str | None = None
+    created_on: datetime | None = None
