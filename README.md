@@ -113,13 +113,77 @@ functions:
    -  GetEventTimelineEntryTypeById
    -  UpdateEventTimelineEntryType
    -  DeleteTimelineEntryType
+
    -  CreateEventTimeline
    -  GetEventTimelineByUUID
    -  UpdateEventTimeline
    -  DeleteEventTimeline
-   -  CreateEventTimelineNote
 
-   -  GetEventTimelineNotesByTimelineUUID
-   -  UpdateEventTimelineNote -
-   -  DeleteEventTimelineNote -
+   -  CreateEventTimelineNote 
+   -  ~~GetEventTimelineNotesByTimelineUUID~~
+   -  ~~UpdateEventTimelineNote~~
+   -  ~~DeleteEventTimelineNote~~
 
+### Method of Operations for creating sql.py functions 
+
+#### Reviewing the stored procedure 
+1. Get the name of the stored procedure you're going to call from Python 
+ - `CreateEventTimelineNote` 
+
+2. Determine what parameters you must provide to the SQL Stored Procedure and their Data Type 
+   - TimelineUUIDParam UUID 
+   - EntryNoteParam TEXT 
+
+EXAMPLE PROCEDURE: 
+
+```sql  
+CREATE OR REPLACE PROCEDURE CreateEventTimelineNote(
+    TimelineUUIDParam UUID,
+    EntryNoteParam TEXT
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO Event_Timeline_Notes (TimelineNoteUUID, TimelineUUID, EntryNote)
+    VALUES (uuid_generate_v4(), TimelineUUIDParam, EntryNoteParam);
+END;
+$$;
+
+```
+
+#### Calling the stored procedure using Python 
+
+1. Create a model class if one does not already exist 
+   1. Query the table that the stored procedure is running against to get the schema of the table or review the `TableSchema.dbml` file 
+   2. Replicate the table within a Pydantic BaseModel class, mapping the SQL data type for each row to a Python datatype. 
+      1. TEXT, UUID, VARCHAR = str
+      2. INT, SERIAL = int 
+      3. TIMESTAMP, DATETIME = datetime 
+
+   EXAMPLE Base Model: 
+
+   ```Python 
+
+   class EventTimelineNote(BaseModel): 
+    timeline_note_uuid: str | None = None
+    timeline_uuid: str | None = None
+    entry_note: str | None = None
+    created_on: datetime | None = None
+   
+   ```
+
+2. Name the function pythonically 
+   1. Python uses `snake_case` for it's function names 
+
+   EXAMPLE: 
+      1. Calling a stored procedure named       `CreateEventTimelineNote` would be done via a Python function called `create_event_timeline_note` 
+
+3. Determine what arguments you need to provide to the Python function that will be passed to the SQL query as parameters 
+   1. Are all of the parameters covered in the Model class, or must we pass additional arguments? 
+
+4. Create the qstring variable that will be used to invoke the SQL query 
+   1. Stored procedures will be called using the `CALL` syntax. 
+   
+   > EXAMPLE for a stored procedure named `CreateEventTimelineNote` that accepts the parameters `TimelineUUIDParam` and `EntryNoteParam`: 
+   > 
+   >  `CALL CreateEventTimelineNote TimelineUUIDParam => %s, EntryNoteParam => %s ` 

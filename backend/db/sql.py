@@ -193,7 +193,7 @@ class Events(DatabaseManager):
             return None
     
     
-    def update_event(self,event_uuid, updated_information: EventModel): 
+    def update_event(self,event_uuid: str, updated_information: EventModel): 
         qstring = """ 
                   CALL UpdateEvent(EventUUIDParam=> %s,EventTypeIdParam=> %s, EventNameParam => %s, EventStatusIdParam => %s, CommanderUserUUIDParam => %s, EventSeverityIdParam => %s )
                   """
@@ -251,6 +251,35 @@ class EventTimeline(DatabaseManager):
                 return event_timeline_note
         except Exception as err:
             logging.error(f'Unable to update Event Timeline note: {err}')
+
+# Python formatted name of the function. Use 'Snake' case. Example 'function_name_here' 
+    def create_event_timeline_note(self, timeline_note: EventTimelineNote):
+        # Begin the 'Try' block. If any errors happen in this block, it will go to the 'Except' block 
+        try: 
+            # Logging statement. This logs to the console what the command will do when it runs. 
+            logging.info(f'Create Event Timeline Notes by Timeline Note UUID: {timeline_note.timeline_uuid}')
+
+            # Define the query string for the SQL function or stored procedure you will run. 
+            qstring = 'CALL CreateTimelineNote(TimelineUUIDParam => %s , EntryNoteParam => %s)'
+            
+            # Execute the sql query. This will run the command as it is written in the backend/sql/functions directory 
+            # It will then store it in a variable called 'result' 
+            # The library that is running the query will replace '%s' above with the Python argument that you define 
+            # below
+            result = self.execute_query(query=qstring,params=(argument_1, argument_2))
+
+            # Return the result of the query 
+            return result 
+        # If something goes wrong with everything in the 'Try' block, store the error that is thrown
+        # In a variable named 'err'. Log the error as it is raised. 
+        except Exception as err: 
+            logging.error(f'Error thrown in try block: {err}')
+
+
+
+
+
+
 
     # Python formatted name of the function. Use 'Snake' case. Example 'function_name_here' 
     def function_name(self, argument_1: str, argument_2: str):

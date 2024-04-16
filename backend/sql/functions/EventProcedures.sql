@@ -347,7 +347,6 @@ END;
 $$;
 
 CREATE OR REPLACE PROCEDURE CreateEventTimelineNote(
-    TimelineNoteUUIDParam UUID,
     TimelineUUIDParam UUID,
     EntryNoteParam TEXT
 )
@@ -355,7 +354,7 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     INSERT INTO Event_Timeline_Notes (TimelineNoteUUID, TimelineUUID, EntryNote)
-    VALUES (TimelineNoteUUIDParam, TimelineUUIDParam, EntryNoteParam);
+    VALUES (uuid_generate_v4(), TimelineUUIDParam, EntryNoteParam);
 END;
 $$;
 
