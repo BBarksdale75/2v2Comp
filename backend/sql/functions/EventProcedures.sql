@@ -142,8 +142,8 @@ CREATE OR REPLACE PROCEDURE CreateEvent(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    INSERT INTO Event (EventTypeId, EventName, EventStatusId, CommanderUserUUID, EventSeverityId)
-    VALUES (EventTypeParam, EventNameParam, EventStatusIdParam, CommanderUserUUIDParam, EventSeverityIdParam);
+    INSERT INTO Event (EventUUID, EventTypeId, EventName, EventStatusId, CommanderUserUUID, EventSeverityId)
+    VALUES (uuid_generate_v4(),eventTypeParam, EventNameParam, EventStatusIdParam, CommanderUserUUIDParam, EventSeverityIdParam);
 END;
 $$;
 
@@ -155,13 +155,14 @@ RETURNS TABLE (
     EventName VARCHAR,
     EventStatusId INT,
     CommanderUserUUID UUID,
-    EventSeverityId INT
+    EventSeverityId INT,
+    CreatedOn TIMESTAMP
 ) 
 LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT e.EventUUID, e.EventTypeId, e.EventName, e.EventStatusId, e.CommanderUserUUID, e.EventSeverityId
+    SELECT e.EventUUID, e.EventTypeId, e.EventName, e.EventStatusId, e.CommanderUserUUID, e.EventSeverityId, e.CreatedOn
     FROM Event e
     WHERE e.EventUUID = EventUUIDParam; 
 END;
@@ -175,13 +176,14 @@ RETURNS TABLE (
     EventName VARCHAR,
     EventStatusId INT,
     CommanderUserUUID UUID,
-    EventSeverityId INT
+    EventSeverityId INT,
+    CreatedOn TIMESTAMP
 ) 
 LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT event.EventUUID, e.EventTypeId, e.EventName, e.EventStatusId, e.CommanderUserUUID, e.EventSeverityId
+    SELECT e.EventUUID, e.EventTypeId, e.EventName, e.EventStatusId, e.CommanderUserUUID, e.EventSeverityId, e.CreatedOn
     FROM Event e ; 
 END;
 $$;
@@ -287,16 +289,42 @@ $$;
 
 CREATE OR REPLACE PROCEDURE CreateEventTimeline(
     EventUUIDParam UUID,
-    TimelineUUIDParam UUID,
-    TimelineNoteUUIDParam VARCHAR,
     TimelineEntryTypeIdParam INT,
-    EnteredByUserUUIDParam UUID
+    EnteredByUserUUIDParam UUID,
+    OUT TimelineUUIDResult UUID
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    INSERT INTO Event_Timeline (EventUUID, TimelineUUID, TimelineNoteUUID, TimelineEntryTypeId, EnteredByUserUUID)
-    VALUES (EventUUIDParam, TimelineUUIDParam, TimelineNoteUUIDParam, TimelineEntryTypeIdParam, EnteredByUserUUIDParam);
+
+    -- Generate UUID using uuid_generate_v4 function
+    TimelineUUIDResult := uuid_generate_v4();
+
+    -- Insert into the table
+    INSERT INTO Event_Timeline (EventUUID, TimelineUUID, TimelineEntryTypeId, EnteredByUserUUID)
+    VALUES (EventUUIDParam, TimelineUUIDResult, TimelineEntryTypeIdParam, EnteredByUserUUIDParam);
+
+END;
+$$;
+
+
+CREATE OR REPLACE FUNCTION GetEventTimelineEntriesByEventUUID(EventUUIDParam UUID)
+RETURNS TABLE (
+    EventUUID UUID,
+    TimelineUUID UUID,
+    TimelineNoteUUID VARCHAR,
+    TimelineEntryTypeId INT,
+    EnteredByUserUUID UUID,
+    CreatedOn TIMESTAMP
+) 
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT et.EventUUID, et.TimelineUUID, et.TimelineNoteUUID, et.TimelineEntryTypeId, et.EnteredByUserUUID, et.CreatedOn
+    FROM Event_Timeline et
+    WHERE et.EventUUID = EventUUIDParam
+    ORDER BY CreatedOn ;
 END;
 $$;
 

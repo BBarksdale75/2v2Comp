@@ -47,7 +47,7 @@ class EventModel(BaseModel):
     event_type_id: int  | None = None
     event_name: str  | None = None
     event_status_id: int  | None = None
-    commander_user_uuid: int  | None = None
+    commander_user_uuid: str  | None = None
     event_severity_id: int  | None = None
     created_on: datetime | None = None
 
@@ -55,4 +55,17 @@ class EventTimelineNote(BaseModel):
     timeline_note_uuid: str | None = None
     timeline_uuid: str | None = None
     entry_note: str | None = None
+    timeline_entry_entry_type_id: int | None = None 
     created_on: datetime | None = None
+
+class EventTimelineEntry(BaseModel): 
+    event_uuid: str | None = None 
+    timeline_uuid: str | None = None 
+    timeline_entry_type_id: int | None = None 
+    entered_by_user_uuid: int | None = None 
+    created_on: datetime | None = None
+
+class EventTimelineEntryType(BaseModel): 
+    timeline_entry_type_id: int 
+    timeline_entry_type_name: str 
+    timeline_entry_type_desc: str 

@@ -70,10 +70,3 @@ async def delete_team_user_async(team_uuid: str, user_uuid: str):
     except Exception as err:
         logging.error(f'Unable to insert team member: {err}')
         raise HTTPException(status_code=500, detail='Unable to insert team member due to an unhandled exception')
-    
-     # Create function in sql.py file to call the procedure DeleteResponseTeamUser 
-     # Pass the function UserId and TeamId mapping them to user_uuid and team_uuid respectively 
-     # Return true if the user account was deleted successfully 
-## git add -A ; git commit -m 'Add team members api' ; git push 
-
-

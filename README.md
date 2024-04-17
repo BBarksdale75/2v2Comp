@@ -108,18 +108,11 @@ functions:
    - ~~UpdateEvent~~
    -  ~~DeleteEvent~~
 
-   -  CreateEventTimelineEntryType
-   -  GetEventTimelineEntryTypes
-   -  GetEventTimelineEntryTypeById
-   -  UpdateEventTimelineEntryType
-   -  DeleteTimelineEntryType
-
-   -  CreateEventTimeline
-   -  GetEventTimelineByUUID
-   -  UpdateEventTimeline
-   -  DeleteEventTimeline
-
-   -  CreateEventTimelineNote 
+   -  ~~CreateEventTimelineEntryType~~
+   -  ~~GetEventTimelineEntryTypes~~
+   - ~~ CreateEventTimeline~~
+   -  ~~GetEventTimelineByUUID~~
+   -  ~~CreateEventTimelineNote~~
    -  ~~GetEventTimelineNotesByTimelineUUID~~
    -  ~~UpdateEventTimelineNote~~
    -  ~~DeleteEventTimelineNote~~

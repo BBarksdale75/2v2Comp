@@ -2,7 +2,7 @@ import psycopg2
 from psycopg2 import Error
 from config import DBConfig
 import logging
-from api.models import UserAccount, ResponseTeam, ResponseTeamAccount, EventType, EventStatus, EventModel, EventTimelineNote
+from api.models import EventTimelineEntry, EventTimelineEntryType, UserAccount, ResponseTeam, ResponseTeamAccount, EventType, EventStatus, EventModel, EventTimelineNote
 from psycopg2.errors import InvalidTextRepresentation
 
 class DatabaseManager:
@@ -252,34 +252,96 @@ class EventTimeline(DatabaseManager):
         except Exception as err:
             logging.error(f'Unable to update Event Timeline note: {err}')
 
-# Python formatted name of the function. Use 'Snake' case. Example 'function_name_here' 
     def create_event_timeline_note(self, timeline_note: EventTimelineNote):
-        # Begin the 'Try' block. If any errors happen in this block, it will go to the 'Except' block 
         try: 
-            # Logging statement. This logs to the console what the command will do when it runs. 
             logging.info(f'Create Event Timeline Notes by Timeline Note UUID: {timeline_note.timeline_uuid}')
-
-            # Define the query string for the SQL function or stored procedure you will run. 
-            qstring = 'CALL CreateTimelineNote(TimelineUUIDParam => %s , EntryNoteParam => %s)'
-            
-            # Execute the sql query. This will run the command as it is written in the backend/sql/functions directory 
-            # It will then store it in a variable called 'result' 
-            # The library that is running the query will replace '%s' above with the Python argument that you define 
-            # below
-            result = self.execute_query(query=qstring,params=(argument_1, argument_2))
-
-            # Return the result of the query 
+            qstring = 'CALL CreateTimelineNote(TimelineUUIDParam => %s , EntryNoteParam => %s )'
+            result = self.execute_query(query=qstring,params=(timeline_note.timeline_uuid, timeline_note.entry_note))
             return result 
-        # If something goes wrong with everything in the 'Try' block, store the error that is thrown
-        # In a variable named 'err'. Log the error as it is raised. 
         except Exception as err: 
             logging.error(f'Error thrown in try block: {err}')
 
+    def create_event_timeline(self,timeline_entry: EventTimelineEntry) -> str: 
+        try: 
+            logging.info(f'Adding event timeline entry')
+            qstring = """ 
+                    CALL CreateEventTimeline(EventUUIDParam => %s,
+                                    TimelineEntryTypeIdParam => %s, 
+                                    EnteredByUserUUIDParam => %s    ) 
+                    """
+            
+            result = self.execute_query(qstring,params=(timeline_entry.event_uuid,
+                timeline_entry.timeline_entry_type_id,
+                timeline_entry.entered_by_user_uuid
+            ))
+            timeline_entry_uuid = None
 
+            for row in result: 
+                timeline_entry_uuid = row
+            
+            if timeline_entry_uuid is None: 
+                raise ValueError('Timeline entry not created; did not receive a valid response when calling CreateEventTimeline')
+            
+            else: 
+                return timeline_entry_uuid
+        except Exception as err: 
+                logging.error(f'Error thrown in try block: {err}')
 
+    def get_event_timeline_by_timeline_uuid(self,timeline_uuid: str) -> EventTimelineEntry: 
+        try: 
+            qstring = 'SELECT * from GetEventTimelineByUUID(TimelineUUIDParam => %s)'
+            result = self.execute_query(qstring, params=(timeline_uuid,))
+            if len(result) > 1 : 
+                raise ValueError(f'Found duplicate entries with uuid: {timeline_uuid}')
+            else: 
+                timeline_entry_dict = dict(zip(EventTimelineEntry.model_fields,result[0]))
+                return EventTimelineEntry(**timeline_entry_dict)
+        except Exception as err: 
+            logging.error(f'Unable to get event with timeline uuid: {timeline_uuid} Error: {err}')
 
+    def get_event_timeline_entries_by_event_uuid(self,event_uuid: str) -> list[EventTimelineEntry]: 
+        try: 
+            qstring = 'SELECT * from GetEventTimelineEntriesByEventUUID(EventUUIDParam => %s)'
+            result = self.execute_query(qstring, params=(event_uuid,))
+            if result == [] or len(result)  <= 0 :
+                raise ValueError('No timeline entries found for this event')
+            timeline_entries = []
+            for row in result: 
+                timeline_entry_dict = dict(zip(EventTimelineEntry.model_fields,result[0]))
+                timeline_entries.append(EventTimelineEntry(**timeline_entry_dict))
+            return timeline_entries
+        except Exception as err: 
+            logging.error(f'Unable to get event with timeline uuid: {event_uuid} Error: {err}')
+            return None
 
+    def get_event_timeline_entry_types(self):
+        try: 
+            qstring = 'SELECT * from GetEventTimelineEntryTypes()'
+            result = self.execute_query(qstring)
+            entry_types = []
+            for row in result: 
+                timeline_entry_dict = dict(zip(EventTimelineEntryType.model_fields,result[0]))
+                entry_types.append(EventTimelineEntry(**timeline_entry_dict))
+            return entry_types
+        except Exception as err: 
+            logging.error(f'Unable to get event timeline entry types due to an unhandled exception: {err}') 
 
+    def create_event_timeline_entry_type(self, new_entry_type: EventTimelineEntryType) -> bool: 
+        try: 
+            logging.info(f'Adding event timeline entry')
+            qstring = """ 
+                    CALL CreateEventTimeline(EventUUIDParam => %s,
+                                    TimelineEntryTypeIdParam => %s, 
+                                    EnteredByUserUUIDParam => %s    ) 
+                    """
+            result = self.execute_query(qstring,params=(
+                new_entry_type.timeline_entry_type_name,
+                new_entry_type.timeline_entry_type_desc
+            ))
+            return True
+        except Exception as err: 
+            logging.error(f'Error thrown in try block: {err}')
+            return False
 
     # Python formatted name of the function. Use 'Snake' case. Example 'function_name_here' 
     def function_name(self, argument_1: str, argument_2: str):
