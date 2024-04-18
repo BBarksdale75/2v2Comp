@@ -1,6 +1,6 @@
-from api.account import router as accountrouter
-from api.teams import router as teamsrouter
-from api.events import router as eventsrouter
+from api.routes.account import router as accountrouter
+from api.routes.teams import router as teamsrouter
+from api.routes.events import router as eventsrouter
 from fastapi import FastAPI
 
 app = FastAPI()

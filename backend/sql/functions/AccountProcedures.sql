@@ -1,12 +1,14 @@
-CREATE OR REPLACE PROCEDURE CreateAccount(FirstName VARCHAR, LastName VARCHAR, RoleId INT, Active BOOLEAN)
+CREATE OR REPLACE PROCEDURE CreateAccount(OUT UserUUID UUID, FirstName VARCHAR, LastName VARCHAR, RoleId INT, Active BOOLEAN)
 LANGUAGE plpgsql
 AS $$
 BEGIN
    INSERT INTO Account (UserUUID, UserFName, UserLName, AccountRoleId, isActive)
    VALUES 
-   (uuid_generate_v4(),FirstName,LastName,RoleId,Active);
+   (uuid_generate_v4(),FirstName,LastName,RoleId,Active)
+   RETURNING UserUUID INTO UserUUID;
 END;
 $$;
+
 
 -- CALL CreateAccount ('David', 'Danes', 3, False );
 

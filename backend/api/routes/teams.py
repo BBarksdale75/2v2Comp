@@ -1,20 +1,20 @@
 from fastapi import APIRouter, HTTPException
 from api.models import ResponseTeam, ResponseTeamAccount, UserAccount
-from db.sql import DatabaseManager
+from db.sql import Teams
 import logging 
 
 router = APIRouter() 
 
-sql = DatabaseManager()
+team_handler = Teams()
 
 @router.get('/team')
 async def get_teams_async(): 
-    return sql.get_teams()
+    return team_handler.get_teams()
 
 @router.post('/team')
 async def create_team_async(body: ResponseTeam):
     try:
-        sql.create_team(body)
+        team_handler.create_team(body)
         return True
     except Exception as err:
         logging.error(f'Unable to create Team: {err}')
@@ -22,12 +22,12 @@ async def create_team_async(body: ResponseTeam):
     
 @router.get('/team/{team_uuid}')
 async def get_team_by_id_async(team_uuid: str):
-    return sql.get_team_by_id(team_uuid)
+    return team_handler.get_team_by_id(team_uuid)
 
 @router.delete('/team/{team_uuid}')
 async def delete_team_by_id_async(team_uuid: str):
     try:
-        sql.delete_team_by_id(team_uuid)
+        team_handler.delete_team_by_id(team_uuid)
         return True
     except Exception as err:
         logging.error(f'Unable to delete team: {err}')
@@ -36,7 +36,7 @@ async def delete_team_by_id_async(team_uuid: str):
 @router.patch('/team/{team_uuid}')
 async def update_team_async(team_uuid: str,body: ResponseTeam):
     try:
-        sql.update_team_by_id(
+        team_handler.update_team_by_id(
             response_team_id=team_uuid,
             updated_information=body
             )
@@ -49,7 +49,7 @@ async def update_team_async(team_uuid: str,body: ResponseTeam):
 @router.post('/team/{team_uuid}/user')
 async def create_team_user_async(team_uuid: str, body:UserAccount):
     try:
-        sql.insert_team_user(
+        team_handler.insert_team_user(
             team_uuid=team_uuid,
             user_uuid=body.user_uuid
         )
@@ -62,7 +62,7 @@ async def create_team_user_async(team_uuid: str, body:UserAccount):
 @router.delete('/team/{team_uuid}/member/{user_uuid}')
 async def delete_team_user_async(team_uuid: str, user_uuid: str): 
     try:
-        sql.delete_team_user(
+        team_handler.delete_team_user(
             team_uuid=team_uuid,
             user_uuid=user_uuid
         )

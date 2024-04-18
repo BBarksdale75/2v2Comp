@@ -1,5 +1,6 @@
 import psycopg2
 from psycopg2 import Error
+from api.exceptions.AccountException import AccountNotFound
 from config import DBConfig
 import logging
 from api.models import EventTimelineEntry, EventTimelineEntryType, UserAccount, ResponseTeam, ResponseTeamAccount, EventType, EventStatus, EventModel, EventTimelineNote
@@ -458,21 +459,34 @@ class Accounts(DatabaseManager):
         Returns:
             dict: A dictionary representing the user account.
         """
-        logging.info(f'Getting account with Id: {user_uuid}')
-        qstring = 'SELECT * FROM GetAccountById(%s) '
-        result = self.execute_query(query=qstring, params=(user_uuid,))  # Pass UUID as a tuple
-        return result
+        try: 
+            logging.info(f'Getting account with Id: {user_uuid}')
+            qstring = 'SELECT * FROM GetAccountById(%s) '
+            result = self.execute_query(query=qstring, params=(user_uuid,))  # Pass UUID as a tuple
+            if result is None or (len(result) > 1): 
+                raise ValueError(f'Error encountered while looking up user Id: {user_uuid}')
+            for row in result: 
+                if user_dict is None: 
+                    raise ValueError(f'Unable to find user with id: {user_uuid}')
+                user_dict = (dict(zip(UserAccount().model_fields.keys(),row)))
+            return UserAccount(**user_dict)
+        except UnboundLocalError as err: 
+            logging.error(f'Encountered an unbound local error, likely because an account was not found. {err}')
+            raise AccountNotFound(user_uuid)
+        except Exception as err: 
+            logging.error(f'An unhandled exception occurred while getting user info for user: {user_uuid} Error: {err}')
 
         
     def create_user_account(self, user:UserAccount): 
-        qstring = 'CALL CreateAccount (%s, %s, %s, %s )'
+        qstring = 'CALL CreateAccount(%s,%s, %s, %s, %s )'
         result = self.execute_query(query=qstring,params=(
+            None,
             user.user_fname,
             user.user_lname,
             user.account_role_id, 
             user.is_active
         ))
-        return result
+        return result[0][0]
     
     def delete_user_account_by_id(self, user_uuid: str):
         """

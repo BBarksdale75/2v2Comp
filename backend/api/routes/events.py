@@ -3,11 +3,8 @@ from api.models import EventModel, EventTimelineEntry
 from db.sql import Events, EventTimeline
 
 router = APIRouter() 
-
 event_handler = Events()
-
 timeline_handler = EventTimeline()
-
 
 @router.get('/event')
 async def get_events_async(): 
