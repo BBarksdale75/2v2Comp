@@ -5,7 +5,7 @@ BEGIN
    INSERT INTO Account (UserUUID, UserFName, UserLName, AccountRoleId, isActive)
    VALUES 
    (uuid_generate_v4(),FirstName,LastName,RoleId,Active)
-   RETURNING UserUUID INTO UserUUID;
+   RETURNING Account.UserUUID INTO UserUUID;
 END;
 $$;
 

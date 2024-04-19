@@ -45,7 +45,6 @@ async def update_team_async(team_uuid: str,body: ResponseTeam):
         logging.error(f'Unable to update team: {err}')
         raise HTTPException(status_code=500, detail='Unable to update team due to and unhandled exception')
     
-
 @router.post('/team/{team_uuid}/user')
 async def create_team_user_async(team_uuid: str, body:UserAccount):
     try:

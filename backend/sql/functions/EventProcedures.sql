@@ -133,6 +133,7 @@ END;
 $$;
 
 CREATE OR REPLACE PROCEDURE CreateEvent(
+    OUT EventUUID UUID,
     EventTypeParam INT,
     EventNameParam VARCHAR,
     EventStatusIdParam INT,
@@ -142,10 +143,9 @@ CREATE OR REPLACE PROCEDURE CreateEvent(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    declare @eventId uuid = uuid_generate_v4()
     INSERT INTO Event (EventUUID, EventTypeId, EventName, EventStatusId, CommanderUserUUID, EventSeverityId)
-    VALUES (@eventId,eventTypeParam, EventNameParam, EventStatusIdParam, CommanderUserUUIDParam, EventSeverityIdParam)
-
+    VALUES (uuid_generate_v4(),eventTypeParam, EventNameParam, EventStatusIdParam, CommanderUserUUIDParam, EventSeverityIdParam)
+    RETURNING Event.EventUUID INTO EventUUID;
 END;
 $$;
 

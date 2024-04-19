@@ -25,8 +25,7 @@ async def get_user_account_by_id_async(user_uuid: str):
     try: 
         return sql.get_user_account_by_id(user_uuid)
     except AccountNotFound as err: 
-        raise HTTPException(status_code=404,detail=f'User not found with Id: {user_uuid}')
-         
+        raise HTTPException(status_code=404,detail=f'User not found with Id: {user_uuid}')        
 
 @router.delete('/account/{user_uuid}')
 async def delete_user_account_async(user_uuid: str):

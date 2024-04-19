@@ -164,15 +164,16 @@ class Events(DatabaseManager):
         return event_type
 
     def create_event(self, event:EventModel): 
-        qstring = 'CALL CreateEvent (EventTypeParam=> %s, EventNameParam => %s, EventStatusIdParam=> %s, CommanderUserUUIDParam=> %s, EventSeverityIdParam => %s)'
+        qstring = 'CALL CreateEvent (EventUUID => %s, EventTypeParam=> %s, EventNameParam => %s, EventStatusIdParam=> %s, CommanderUserUUIDParam=> %s, EventSeverityIdParam => %s)'
         result = self.execute_query(query=qstring, params=(
+            None,
             event.event_type_id,
             event.event_name,
             event.event_status_id,
             event.commander_user_uuid, 
             event.event_severity_id
         ))
-        return result
+        return result[0][0]
     
     def get_event_by_id(self, event_uuid: str): 
         qstring =   'SELECT * FROM GetEventById(EventUUIDParam => %s)'
@@ -192,8 +193,7 @@ class Events(DatabaseManager):
             return events
         else: 
             return None
-    
-    
+
     def update_event(self,event_uuid: str, updated_information: EventModel): 
         qstring = """ 
                   CALL UpdateEvent(EventUUIDParam=> %s,EventTypeIdParam=> %s, EventNameParam => %s, EventStatusIdParam => %s, CommanderUserUUIDParam => %s, EventSeverityIdParam => %s )
@@ -207,7 +207,7 @@ class Events(DatabaseManager):
             updated_information.event_severity_id
         ))
         return result 
-    
+
     def delete_event(self, event_uuid: str): 
         try: 
             logging.info(f'Deleting event with uuid: {event_uuid}')
@@ -216,7 +216,6 @@ class Events(DatabaseManager):
             return result
         except Exception as err: 
             logging.error(f'Unable to delete event with Id: {event_uuid} Error: {err}')
-        
 
 class EventTimeline(DatabaseManager): 
 

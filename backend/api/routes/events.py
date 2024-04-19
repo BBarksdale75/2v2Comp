@@ -12,7 +12,7 @@ async def get_events_async():
 
 @router.post('/event')
 async def create_event_async(body: EventModel):
-    return event_handler.create_event(body)
+    return {'EventId': event_handler.create_event(body)}
 
 @router.get('/event/types')
 async def get_event_types_async():
